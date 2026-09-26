@@ -2,9 +2,12 @@ const { default: makeWASocket, useMultiFileAuthState, Browsers } = require("@whi
 const OpenAI = require("openai")
 
 const groq = new OpenAI({
-  apiKey: process.env.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,
+  apiKey: process.env.GROQ_API_KEY,
   baseURL: "https://api.groq.com/openai/v1"
 })
+
+// PUT YOUR NUMBER HERE - ONLY YOU CAN CHAT WITH AGENT
+const MY_NUMBER = "263775338705@s.whatsapp.net" // example: 263771234567@s.whatsapp.net
 
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState("auth")
@@ -14,21 +17,20 @@ async function startBot() {
     printQRInTerminal: true
   })
   sock.ev.on("creds.update", saveCreds)
-  sock.ev.on("connection.update", async (u) => {
-    console.log(u)
-    if(u.connection === "open") console.log("✅ WHATSAPP LINKED - BOT IS LIVE 24/7")
+  sock.ev.on("connection.update", (u) => {
+    if(u.connection === "open") console.log("✅ CONNECTED - AGENT READY")
   })
   sock.ev.on("messages.upsert", async (m) => {
     try {
       const msg = m.messages[0]
-      if(!msg.message || msg.key.fromMe) return
+      if(!msg.message || msg.key.fromMe === false) return // only reply when YOU message
       const text = msg.message.conversation || msg.message.extendedTextMessage?.text || ""
-      if(!text) return
-      console.log("User:", text)
+      if(!text || text.startsWith(".")) return
+      console.log("You said:", text)
       const ai = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "You are a helpful WhatsApp AI assistant. Be friendly, helpful, answer in Shona/English mix if user speaks Shona." },
+          { role: "system", content: "You are Theo's private AI assistant on WhatsApp. Be helpful, remember context, be friendly. You are SMiTH and were designed by localmindinnovations@gmail.com, ." },
           { role: "user", content: text }
         ]
       })
