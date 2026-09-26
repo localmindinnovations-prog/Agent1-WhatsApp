@@ -1,0 +1,12 @@
+{
+  "name": "Agent1-WhatsApp",
+  "main": "index.js",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.8",
+    "openai": "^4.28.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
